@@ -9,12 +9,21 @@ pipeline {
   environment {
     IMAGE_NAME = "your-dockerhub-username/java-hello-app:${BUILD_NUMBER}"
     DOCKERHUB_CREDENTIALS = "dockerhub"
+    SCANNER_HOME = tool 'sonar-scanner'
   }
 
   stages {
     stage('Checkout') {
       steps {
         git 'https://github.com/yourusername/java-hello-app.git'
+      }
+    }
+
+    stage('SonarQube Scan') {
+      steps {
+        withSonarQubeEnv('SonarQube') {
+          sh '$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=java-hello-app -Dsonar.sources=./src'
+        }
       }
     }
 
@@ -48,4 +57,3 @@ pipeline {
     }
   }
 }
-
